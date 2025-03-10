@@ -15,10 +15,10 @@ class LookupTableModule extends Module {
     val condition = Input(Condition()) // Enum input for condition
     val sdn_5_0 = Input(UInt(6.W)) // 6-bit Sdn[5:0]
     val sdn_6_8 = Input(UInt(3.W)) // 3-bit Sdn[6:8]
-    val tA = Output(SInt(8.W)) // TAn
-    val tB = Output(SInt(8.W)) // TBn
-    val tC = Output(SInt(8.W)) // TCn
-    val tD = Output(SInt(8.W)) // TDn
+    val tA = Output(SInt(3.W)) // TAn
+    val tB = Output(SInt(3.W)) // TBn
+    val tC = Output(SInt(3.W)) // TCn
+    val tD = Output(SInt(3.W)) // TDn
   })
 
   // Default output values
