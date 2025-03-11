@@ -13,6 +13,11 @@ class Encoder(master: Boolean, init: UInt) extends Module {
         val n = Input(UInt(32.W)) // TODO: Width unknown
         val n0 = Input(UInt(32.W))
         val loc_rcvr_status = Input(Bool())
+
+        val tA = Output(SInt(3.W)) // TAn
+        val tB = Output(SInt(3.W)) // TBn
+        val tC = Output(SInt(3.W)) // TCn
+        val tD = Output(SInt(3.W)) // TDn
     })
 
     val lfsr = new SideStreamScrambler(master, init)
@@ -57,5 +62,9 @@ class Encoder(master: Boolean, init: UInt) extends Module {
     lut.io.sdn_5_0 := sd.io.sdn.asUInt(5, 0)
     lut.io.sdn_6_8 := sd.io.sdn.asUInt(8, 6)
 
+    io.tA := lut.io.tA
+    io.tB := lut.io.tB
+    io.tC := lut.io.tC
+    io.tD := lut.io.tD
     // At the end of this pipeline, we have tA, tB, tC, tD
 }
