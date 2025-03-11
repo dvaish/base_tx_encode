@@ -22,6 +22,8 @@ class TaTbTcTdGenerator extends Module {
     val sdn_5_0 = Input(UInt(6.W)) // 6-bit Sdn[5:0]
     val sdn_6_8 = Input(UInt(3.W)) // 3-bit Sdn[6:8]
 
+    val condition = Input(Condition())
+
     val tA = Output(SInt(3.W)) // TAn
     val tB = Output(SInt(3.W)) // TBn
     val tC = Output(SInt(3.W)) // TCn
@@ -29,28 +31,21 @@ class TaTbTcTdGenerator extends Module {
   })
 
   // Instantiate ConditionEncoder
-  val conditionEncoder = Module(new ConditionEncoder)
-  conditionEncoder.io.tx_enable_n := io.tx_enable_n
-  conditionEncoder.io.tx_enable_n1 := io.tx_enable_n1
-  conditionEncoder.io.tx_enable_n2 := io.tx_enable_n2
-  conditionEncoder.io.tx_enable_n3 := io.tx_enable_n3
-  conditionEncoder.io.tx_enable_n4 := io.tx_enable_n4
-  conditionEncoder.io.tx_error_n := io.tx_error_n
-  conditionEncoder.io.tx_error_n1 := io.tx_error_n1
-  conditionEncoder.io.tx_error_n2 := io.tx_error_n2
-  conditionEncoder.io.tx_error_n3 := io.tx_error_n3
-  conditionEncoder.io.csreset_n := io.csreset_n
-  conditionEncoder.io.txd := io.txd
+  val ce = Module(new ConditionEncoder)
+  ce.io.tx_enable := io.tx_enable_n
+  ce.io.tx_error := io.tx_error_n
+  ce.io.csreset_n := io.csreset_n
+  ce.io.tx_data := io.txd
 
   // Instantiate LookupTableModule
-  val lookupTableModule = Module(new LookupTableModule)
-  lookupTableModule.io.condition := conditionEncoder.io.condition
-  lookupTableModule.io.sdn_5_0 := io.sdn_5_0
-  lookupTableModule.io.sdn_6_8 := io.sdn_6_8
+  val lut = Module(new LookupTableModule)
+  lut.io.condition := ce.io.condition
+  lut.io.sdn_5_0 := io.sdn_5_0
+  lut.io.sdn_6_8 := io.sdn_6_8
 
   // Connect outputs
-  io.tA := lookupTableModule.io.tA
-  io.tB := lookupTableModule.io.tB
-  io.tC := lookupTableModule.io.tC
-  io.tD := lookupTableModule.io.tD
+  io.tA := lut.io.tA
+  io.tB := lut.io.tB
+  io.tC := lut.io.tC
+  io.tD := lut.io.tD
 }

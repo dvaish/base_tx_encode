@@ -6,11 +6,12 @@ import chisel3.util.ShiftRegister
 class SdGenerator extends Module {
 	val io = IO(new Bundle {
 		val tx_enable = Input(Bool())
-        val tx_err = Input(Bool())
+        val tx_error = Input(Bool())
         val scn = Input(Vec(8, Bool()))
-        val sdn = Output(Vec(8, Bool()))
-        val txd = Input(UInt(8.W))
+        val tx_data = Input(UInt(8.W))
         val loc_rcvr_status = Input(Bool())
+        val sdn = Output(Vec(8, Bool()))
+        val csreset = Output(Bool())
     })
     
     // TODO: Check this
@@ -19,31 +20,31 @@ class SdGenerator extends Module {
 
     // CSN Generation
     val csreset = tx_enable_n_2 && (!io.tx_enable)
-    val csn = Wire(UInt(3.W))
-    val csn_1 = ShiftRegister(csn, 1)
+    val cs_n = Wire(UInt(3.W))
+    val cs_n_1 = ShiftRegister(cs_n, 1)
 
-    val cextn = Wire(Bool())
-    val cext_errn = Wire(Bool())
+    val cext_n = Wire(Bool())
+    val cext_err_n = Wire(Bool())
 
     // CSN Generation
     when (tx_enable_n_2) {
-        csn(1) := io.sdn(6) ^ csn_1(0)
-        csn(2) := io.sdn(7) ^ csn_1(1)
+        cs_n(1) := io.sdn(6) ^ cs_n_1(0)
+        cs_n(2) := io.sdn(7) ^ cs_n_1(1)
     } .otherwise {
-        csn(1) := 0.B
-        csn(2) := 0.U(1.W)
+        cs_n(1) := 0.B
+        cs_n(2) := 0.U(1.W)
     }
-    csn(0) := csn_1(2)
+    cs_n(0) := cs_n_1(2)
 
     // SDN Generation
-    io.sdn(8) := csn(0)
+    io.sdn(8) := cs_n(0)
 
     when ((!csreset) && (tx_enable_n_2)) {
-        io.sdn(7) := io.scn(7) ^ io.txd(7)
-        io.sdn(6) := io.scn(6) ^ io.txd(6)
+        io.sdn(7) := io.scn(7) ^ io.tx_data(7)
+        io.sdn(6) := io.scn(6) ^ io.tx_data(6)
     } .elsewhen (csreset) {
-        io.sdn(7) := csn_1(1)
-        io.sdn(6) := csn_1(0)
+        io.sdn(7) := cs_n_1(1)
+        io.sdn(6) := cs_n_1(0)
     } .otherwise {
         io.sdn(7) := io.scn(7)
         io.sdn(6) := io.scn(6)
@@ -51,14 +52,14 @@ class SdGenerator extends Module {
 
     for (i <- 3 to 5) {
         when (tx_enable_n_2) {
-            io.sdn(i) := io.scn(i) ^ io.txd(i)
+            io.sdn(i) := io.scn(i) ^ io.tx_data(i)
         } .otherwise {
             io.sdn(i) := io.scn(i)
         }
     }
 
     when (tx_enable_n_2) {
-        io.sdn(2) := io.scn(2) ^ io.txd(2)
+        io.sdn(2) := io.scn(2) ^ io.tx_data(2)
     } .elsewhen (io.loc_rcvr_status === OK) {
         io.sdn(2) := io.scn(2) ^ 1.U
     } .otherwise {
@@ -66,28 +67,28 @@ class SdGenerator extends Module {
     }
 
 
-    when ((!io.tx_enable) && (io.txd === "hF".U)) {
-        cextn := io.tx_err
+    when ((!io.tx_enable) && (io.tx_data === "hF".U)) {
+        cext_n := io.tx_error
     } .otherwise {
-        cextn := 0.B
+        cext_n := 0.B
     }
 
-    when ((!io.tx_enable) && !(io.txd === "hF".U)) {
-        cext_errn := io.tx_err
+    when ((!io.tx_enable) && !(io.tx_data === "hF".U)) {
+        cext_err_n := io.tx_error
     } .otherwise {
-        cext_errn := 0.U(1.W)
+        cext_err_n := 0.U(1.W)
     }
 
     when (tx_enable_n_2) {
-        io.sdn(1) := io.scn(1) ^ io.txd(1)
+        io.sdn(1) := io.scn(1) ^ io.tx_data(1)
     } .otherwise {
-        io.sdn(1) := io.scn(1) ^ cext_errn
+        io.sdn(1) := io.scn(1) ^ cext_err_n
     }
 
     when (tx_enable_n_2 === 1.U) {
-        io.sdn(0) := io.scn(0) ^ io.txd(0)
+        io.sdn(0) := io.scn(0) ^ io.tx_data(0)
     } .otherwise {
-        io.sdn(0) := io.scn(0) ^ cextn
+        io.sdn(0) := io.scn(0) ^ cext_n
     }
 }
 
