@@ -4,7 +4,6 @@ import chisel3._
 
 class SideStreamScrambler(master: Boolean, init: UInt) extends Module {
 	val io = IO(new Bundle {
-		val pcr_rst = Input(UInt(1.W))
         val scrn = Output(Bool())
     })
 

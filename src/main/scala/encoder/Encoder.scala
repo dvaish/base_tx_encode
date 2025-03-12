@@ -14,21 +14,21 @@ class Encoder(master: Boolean, init: UInt) extends Module {
         val n0 = Input(UInt(32.W))
         val loc_rcvr_status = Input(Bool())
 
-        val tA = Output(SInt(3.W)) // TAn
-        val tB = Output(SInt(3.W)) // TBn
-        val tC = Output(SInt(3.W)) // TCn
-        val tD = Output(SInt(3.W)) // TDn
+        val A = Output(SInt(3.W)) // TAn
+        val B = Output(SInt(3.W)) // TBn
+        val C = Output(SInt(3.W)) // TCn
+        val D = Output(SInt(3.W)) // TDn
     })
 
-    val lfsr = new SideStreamScrambler(master, init)
+    val lfsr = Module(new SideStreamScrambler(master, init))
 
 
-    val sxyg = new SxygGenerator()
+    val sxyg = Module(new SxygGenerator())
 
     sxyg.io.scrn := lfsr.io.scrn
 
 
-    val sc = new ScGenerator()
+    val sc = Module(new ScGenerator())
 
     sc.io.tx_enable := io.tx_enable
     sc.io.tx_mode := io.tx_mode
@@ -39,7 +39,7 @@ class Encoder(master: Boolean, init: UInt) extends Module {
     sc.io.n0 := io.n0
 
 
-    val sd = new SdGenerator()
+    val sd = Module(new SdGenerator())
 
     sd.io.tx_enable := io.tx_enable
     sd.io.tx_error := io.tx_error
@@ -48,7 +48,7 @@ class Encoder(master: Boolean, init: UInt) extends Module {
     sd.io.loc_rcvr_status := io.loc_rcvr_status
 
 
-    val ce = new ConditionEncoder()
+    val ce = Module(new ConditionEncoder())
 
     ce.io.tx_enable := io.tx_enable
     ce.io.tx_error := io.tx_error
@@ -56,15 +56,24 @@ class Encoder(master: Boolean, init: UInt) extends Module {
     ce.io.tx_data := io.tx_data
 
 
-    val lut = new LookupTableModule()
+    val lut = Module(new LookupTableModule())
 
     lut.io.condition := ce.io.condition
     lut.io.sdn_5_0 := sd.io.sdn.asUInt(5, 0)
     lut.io.sdn_6_8 := sd.io.sdn.asUInt(8, 6)
 
-    io.tA := lut.io.tA
-    io.tB := lut.io.tB
-    io.tC := lut.io.tC
-    io.tD := lut.io.tD
+
+    val abcd = Module(new AnBnCnDnGenerator())
+
+    abcd.io.sgn := sxyg.io.sgn.asUInt
+    abcd.io.tx_enable := io.tx_enable
+    abcd.io.tA := lut.io.tA
+    abcd.io.tB := lut.io.tB
+    abcd.io.tC := lut.io.tC
+    abcd.io.tD := lut.io.tD
+    io.A := abcd.io.A
+    io.B := abcd.io.B
+    io.C := abcd.io.C
+    io.D := abcd.io.D
     // At the end of this pipeline, we have tA, tB, tC, tD
 }

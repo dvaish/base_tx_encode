@@ -20,7 +20,7 @@ class ScGenerator extends Module {
 
     for (i <- 4 to 7) {
         when (io.tx_enable) {
-            io.scn(i) := io.sxn(i)
+            io.scn(i) := io.sxn(i-4)
         } .otherwise {
             io.scn(i) := 0.B
         }

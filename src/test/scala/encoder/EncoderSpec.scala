@@ -13,16 +13,26 @@ class EncoderSpec extends AnyFreeSpec with Matchers {
   "Encoder should output the correct values based on the test sequence" in {
     simulate(new Encoder(true, 1.U(33.W))) { dut =>
 
-      val (value, wrap) = Counter(0 until 2^32 - 1 by 1)
+      var n = 0
 
-      dut.io.tx_data := "0b11110000".U
-      dut.io.tx_enable := 1.B
-      dut.io.tx_error := 0.B
-      dut.io.tx_mode := 0.B 
-      dut.io.n := value
-      dut.io.n0 := 0.U
-      dut.io.loc_rcvr_status := 1.B
+      dut.io.tx_data.poke("b11110000".U(8.W))
+      dut.io.tx_enable.poke(1.B)
+      dut.io.tx_error.poke(0.B)
+      dut.io.tx_mode.poke(0.B)
+      dut.io.n.poke(n.U)
+      dut.io.n0.poke(0.U)
+      dut.io.loc_rcvr_status.poke(1.B)
 
+      dut.reset.poke(true)
+      dut.clock.step()
+      dut.reset.poke(false)
+      dut.clock.step()
+
+      for (i <- 1 to 10) {
+        dut.clock.step()
+        n = n + 1
+        dut.io.n.poke(n.U)
+      }
 
       println("All tests passed!")
     }

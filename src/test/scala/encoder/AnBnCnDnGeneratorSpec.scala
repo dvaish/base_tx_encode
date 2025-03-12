@@ -15,9 +15,7 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
 
       // Test case 1: No sign reversal
       dut.io.sgn.poke("b0000".U)
-      dut.io.tx_enable_n.poke(false.B)
-      dut.io.tx_enable_n2.poke(false.B)
-      dut.io.tx_enable_n4.poke(false.B)
+      dut.io.tx_enable.poke(false.B)
       dut.io.tA.poke(1.S)
       dut.io.tB.poke(2.S)
       dut.io.tC.poke(-2.S)
@@ -30,9 +28,7 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
 
       // Test case 2: Sign reversal on A
       dut.io.sgn.poke("b0001".U)
-      dut.io.tx_enable_n.poke(false.B)
-      dut.io.tx_enable_n2.poke(false.B)
-      dut.io.tx_enable_n4.poke(false.B)
+      dut.io.tx_enable.poke(false.B)
       dut.clock.step()
       dut.io.A.expect(-1.S)
       dut.io.B.expect(2.S)
@@ -41,7 +37,7 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
 
       // Test case 3: Global sign reversal
       dut.io.sgn.poke("b0110".U)
-      dut.io.tx_enable_n2.poke(true.B)
+      dut.io.tx_enable.poke(true.B)
       dut.clock.step()
       dut.io.A.expect(-1.S)
       dut.io.B.expect(2.S)
@@ -50,7 +46,7 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
 
       // Test case 4: Mixed sign reversal
       dut.io.sgn.poke("b1010".U)
-      dut.io.tx_enable_n4.poke(true.B)
+      dut.io.tx_enable.poke(true.B)
       dut.clock.step()
       dut.io.A.expect(-1.S)
       dut.io.B.expect(2.S)
