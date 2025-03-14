@@ -3,6 +3,11 @@ package encoder
 import chisel3._
 
 class SideStreamScrambler(master: Boolean, init: UInt) extends Module {
+	/* 
+	master: Boolean   	= 	Specifies if this instance is a master or slave. 
+							Changes the LFSR being used.
+	init: 	UInt(33.W)	= 	Specifies the initial state of the LFSR
+	*/
 	val io = IO(new Bundle {
         val scrn = Output(Bool())
     })

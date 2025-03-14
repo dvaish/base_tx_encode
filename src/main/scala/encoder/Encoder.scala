@@ -1,10 +1,11 @@
 package encoder
 
 import chisel3._
+import _root_.circt.stage.ChiselStage
 import chisel3.util.ShiftRegister
 import chisel3.util.ShiftRegisters
 
-class Encoder(master: Boolean, init: UInt) extends Module {
+class Encoder(master: Boolean = true, init: UInt = 1.U(33.W)) extends Module {
     val io = IO(new Bundle {
         val tx_enable = Input(Bool())
         val tx_mode = Input(Bool())
@@ -76,4 +77,14 @@ class Encoder(master: Boolean, init: UInt) extends Module {
     io.C := abcd.io.C
     io.D := abcd.io.D
     // At the end of this pipeline, we have tA, tB, tC, tD
+}
+
+/**
+ * Generate Verilog sources and save it in file GCD.v
+ */
+object Encoder extends App {
+  ChiselStage.emitSystemVerilogFile(
+    new Encoder,
+    firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info")
+  )
 }

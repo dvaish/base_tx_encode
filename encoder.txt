@@ -1,0 +1,2 @@
+Encoder.sv
+src/test/verilog/encoder/encoder_tb.sv

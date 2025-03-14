@@ -344,3 +344,18 @@ hs_err_pid*
 
 .metals/
 .metals/*
+
+.simvision/
+.simvision/*
+
+.bloop/
+.bloop/*
+
+*.vcd
+*.trn
+*.dsn
+*.key
+simv
+*.daidir
+obj_dir
+csrc

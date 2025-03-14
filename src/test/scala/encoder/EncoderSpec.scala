@@ -15,8 +15,9 @@ class EncoderSpec extends AnyFreeSpec with Matchers {
 
       var n = 0
 
+      // Initial State
       dut.io.tx_data.poke("b11110000".U(8.W))
-      dut.io.tx_enable.poke(1.B)
+      dut.io.tx_enable.poke(0.B)
       dut.io.tx_error.poke(0.B)
       dut.io.tx_mode.poke(0.B)
       dut.io.n.poke(n.U)
@@ -28,10 +29,24 @@ class EncoderSpec extends AnyFreeSpec with Matchers {
       dut.reset.poke(false)
       dut.clock.step()
 
-      for (i <- 1 to 10) {
+      dut.io.tx_enable.poke(true.B)
+
+      for (i <- 1 until 10) {
+        print(dut.io.A.peek())
+        // print(dut.lut.io.tB.peek())
+        // print(dut.lut.io.tC.peek())
+        // println(dut.lut.io.tD.peek())
         dut.clock.step()
-        n = n + 1
-        dut.io.n.poke(n.U)
+      }
+
+      dut.io.tx_enable.poke(false.B)
+
+      for (i <- 1 until 10) {
+        // println(dut.lut.io.tA.peek())
+        // print(dut.lut.io.tB.peek())
+        // print(dut.lut.io.tC.peek())
+        // println(dut.lut.io.tD.peek())
+        dut.clock.step()
       }
 
       println("All tests passed!")
