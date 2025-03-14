@@ -28,32 +28,62 @@ always @(posedge clock) io_n = io_n + 1;
 
 Encoder dut (.*);
 
+task test_RESET();
+    @(posedge clock);
+    reset <= 0;
+    repeat (5) @(posedge clock);
+endtask
+
+wire [3*4-1:0] packet; 
+assign packet = {dut.lut.io_tA, dut.lut.io_tB, dut.lut.io_tC, dut.lut.io_tD};
+
+localparam logic [3*4-1:0] SSD1         = {{3'd2}, {3'd2}, {3'd2}, {3'd2}};
+localparam logic [3*4-1:0] SSD2         = {{3'd2}, {3'd2}, {3'd2}, {3'd6}};
+localparam logic [3*4-1:0] ESD1         = {{3'd2}, {3'd2}, {3'd2}, {3'd2}};
+localparam logic [3*4-1:0] ESD2_Ext_0   = {{3'd2}, {3'd2}, {3'd2}, {3'd6}};
+localparam logic [3*4-1:0] ESD2_Ext_1   = {{3'd2}, {3'd2}, {3'd6}, {3'd2}};
+localparam logic [3*4-1:0] ESD2_Ext_2   = {{3'd2}, {3'd6}, {3'd2}, {3'd2}};
+localparam logic [3*4-1:0] ESD2_Ext_Err = {{3'd6}, {3'd2}, {3'd2}, {3'd2}};
+
 integer i;
 task test_NORMAL();
 
-    @(posedge clock);
-
-    reset <= 0;
-
-    repeat (5) @(posedge clock);
+    test_RESET();
 
     io_tx_enable <= 1;
+    @(posedge clock);
 
+    assert (packet == SSD1);
+    @(posedge clock);
+
+    assert (packet == SSD2);
     @(posedge clock);
 
     for (i = 0; i < 4; i = i + 1) begin
         $display("[CONDITION=%d] %d, %d, %d, %d", dut.ce.io_condition, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+        // if (i == 0) assert (packet == SSD1);
         @(posedge clock);
     end
 
     io_tx_enable <= 0;
-
     @(posedge clock)
 
-    for (i = 0; i < 4; i = i + 1) begin
-        $display("[CONDITION=%d] %d, %d, %d, %d", dut.ce.io_condition, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
-        @(posedge clock);
-    end
+    $display("[CONDITION=%d] %d, %d, %d, %d", dut.ce.io_condition, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+    @(posedge clock);
+
+    $display("[CONDITION=%d] %d, %d, %d, %d", dut.ce.io_condition, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+    @(posedge clock);
+
+    assert (packet == ESD1);
+    @(posedge clock);
+
+    assert (packet == ESD2_Ext_0);
+    @(posedge clock);
+
+    // for (i = 0; i < 4; i = i + 1) begin
+    //     $display("[CONDITION=%d] %d, %d, %d, %d", dut.ce.io_condition, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+    //     @(posedge clock);
+    // end
 
 endtask
 
