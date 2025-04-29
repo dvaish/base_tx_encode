@@ -76,6 +76,7 @@ class Encoder(master: Boolean = true, init: UInt = 1.U(33.W)) extends Module {
     io.B := abcd.io.B
     io.C := abcd.io.C
     io.D := abcd.io.D
+    printf(s"A: %d, B: %d, C: %d, D: %d\n", io.A, io.B, io.C, io.D)
     // At the end of this pipeline, we have tA, tB, tC, tD
 }
 

@@ -27,12 +27,14 @@ class EncoderSpec extends AnyFreeSpec with Matchers {
       dut.reset.poke(true)
       dut.clock.step()
       dut.reset.poke(false)
+      println(dut.lut.io.tA.peek())
       dut.clock.step()
 
       dut.io.tx_enable.poke(true.B)
 
       for (i <- 1 until 10) {
-        print(dut.io.A.peek())
+        println(peek(dut.io.A).toString(16))
+        println(peek(dut.io.B).toString(16))
         // print(dut.lut.io.tB.peek())
         // print(dut.lut.io.tC.peek())
         // println(dut.lut.io.tD.peek())
@@ -42,7 +44,7 @@ class EncoderSpec extends AnyFreeSpec with Matchers {
       dut.io.tx_enable.poke(false.B)
 
       for (i <- 1 until 10) {
-        // println(dut.lut.io.tA.peek())
+        println(dut.lut.io.tA.peek())
         // print(dut.lut.io.tB.peek())
         // print(dut.lut.io.tC.peek())
         // println(dut.lut.io.tD.peek())
