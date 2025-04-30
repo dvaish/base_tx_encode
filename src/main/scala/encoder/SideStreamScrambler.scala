@@ -9,7 +9,7 @@ class SideStreamScrambler(master: Boolean, init: UInt) extends Module {
 	init: 	UInt(33.W)	= 	Specifies the initial state of the LFSR
 	*/
 	val io = IO(new Bundle {
-        val scrn = Output(Bool())
+        val scrn = Output(Vec(33, Bool()))
     })
 
 	// SCRn is the LFSR specified by section 40.3.1.3.1
@@ -25,5 +25,5 @@ class SideStreamScrambler(master: Boolean, init: UInt) extends Module {
 		lfsr(0) := lfsr(19) || lfsr(32)
 	}
 
-	io.scrn := lfsr(0)
+	io.scrn := lfsr
 }

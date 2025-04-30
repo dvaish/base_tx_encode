@@ -17,10 +17,10 @@ class SideStreamScramblerSpec extends AnyFreeSpec with Matchers {
         dut.reset.poke(true.B)
         dut.clock.step()
         dut.reset.poke(false.B)
-        dut.clock.step()
 
         for (i <- 1 to 33) {
-            val output = dut.io.scrn.peek()
+            val output = dut.io.scrn(0).peek().litValue.toInt
+            println(output)
             dut.clock.step()
         }
  

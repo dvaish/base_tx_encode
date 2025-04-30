@@ -5,7 +5,7 @@ import _root_.circt.stage.ChiselStage
 import chisel3.util.ShiftRegister
 import chisel3.util.ShiftRegisters
 
-class Encoder(master: Boolean = true, init: UInt = 1.U(33.W)) extends Module {
+class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) extends Module {
     val io = IO(new Bundle {
         val tx_enable = Input(Bool())
         val tx_mode = Input(Bool())
@@ -15,10 +15,10 @@ class Encoder(master: Boolean = true, init: UInt = 1.U(33.W)) extends Module {
         val n0 = Input(UInt(32.W))
         val loc_rcvr_status = Input(Bool())
 
-        val A = Output(SInt(3.W)) // TAn
-        val B = Output(SInt(3.W)) // TBn
-        val C = Output(SInt(3.W)) // TCn
-        val D = Output(SInt(3.W)) // TDn
+        val A = Output(SInt(7.W)) // 
+        val B = Output(SInt(7.W)) // 
+        val C = Output(SInt(7.W)) // 
+        val D = Output(SInt(7.W)) // 
     })
 
     val lfsr = Module(new SideStreamScrambler(master, init))
@@ -72,12 +72,31 @@ class Encoder(master: Boolean = true, init: UInt = 1.U(33.W)) extends Module {
     abcd.io.tB := lut.io.tB
     abcd.io.tC := lut.io.tC
     abcd.io.tD := lut.io.tD
-    io.A := abcd.io.A
-    io.B := abcd.io.B
-    io.C := abcd.io.C
-    io.D := abcd.io.D
-    printf(s"A: %d, B: %d, C: %d, D: %d\n", io.A, io.B, io.C, io.D)
-    // At the end of this pipeline, we have tA, tB, tC, tD
+
+    if (filter) {
+
+      val filter = Module(new PulseShapingFilter())
+
+      filter.io.A := abcd.io.A
+      filter.io.B := abcd.io.B
+      filter.io.C := abcd.io.C
+      filter.io.D := abcd.io.D
+      io.A := filter.io.Ashaped
+      io.B := filter.io.Bshaped
+      io.C := filter.io.Cshaped
+      io.D := filter.io.Dshaped
+
+    } else {
+
+      io.A := abcd.io.A
+      io.B := abcd.io.B
+      io.C := abcd.io.C
+      io.D := abcd.io.D
+
+    }
+
+
+    // At the end of this pipeline, we have a filtered version of ABCD
 }
 
 /**

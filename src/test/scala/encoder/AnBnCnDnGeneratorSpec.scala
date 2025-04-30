@@ -13,6 +13,11 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
 
       println("Testing SignRandomizationModule...")
 
+      dut.reset.poke(true)
+      dut.clock.step()
+      dut.reset.poke(false)
+      dut.clock.step()
+
       // Test case 1: No sign reversal
       dut.io.sgn.poke("b0000".U)
       dut.io.tx_enable.poke(false.B)
@@ -26,6 +31,11 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
       dut.io.C.expect(-2.S)
       dut.io.D.expect(1.S)
 
+      dut.reset.poke(true)
+      dut.clock.step()
+      dut.reset.poke(false)
+      dut.clock.step()
+
       // Test case 2: Sign reversal on A
       dut.io.sgn.poke("b0001".U)
       dut.io.tx_enable.poke(false.B)
@@ -35,6 +45,11 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
       dut.io.C.expect(-2.S)
       dut.io.D.expect(1.S)
 
+      dut.reset.poke(true)
+      dut.clock.step()
+      dut.reset.poke(false)
+      dut.clock.step()
+
       // Test case 3: Global sign reversal
       dut.io.sgn.poke("b0110".U)
       dut.io.tx_enable.poke(true.B)
@@ -43,6 +58,11 @@ class AnBnCnDnGeneratorSpec extends AnyFreeSpec with Matchers {
       dut.io.B.expect(2.S)
       dut.io.C.expect(-2.S)
       dut.io.D.expect(-1.S)
+
+      dut.reset.poke(true)
+      dut.clock.step()
+      dut.reset.poke(false)
+      dut.clock.step()
 
       // Test case 4: Mixed sign reversal
       dut.io.sgn.poke("b1010".U)

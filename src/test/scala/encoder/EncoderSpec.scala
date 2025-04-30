@@ -11,7 +11,7 @@ import chisel3.util.Counter
 class EncoderSpec extends AnyFreeSpec with Matchers {
 
   "Encoder should output the correct values based on the test sequence" in {
-    simulate(new Encoder(true, 1.U(33.W))) { dut =>
+    simulate(new Encoder(true, 1.U(33.W), false)) { dut =>
 
       var n = 0
 
@@ -27,29 +27,26 @@ class EncoderSpec extends AnyFreeSpec with Matchers {
       dut.reset.poke(true)
       dut.clock.step()
       dut.reset.poke(false)
-      println(dut.lut.io.tA.peek())
-      dut.clock.step()
 
       dut.io.tx_enable.poke(true.B)
 
       for (i <- 1 until 10) {
-        println(peek(dut.io.A).toString(16))
-        println(peek(dut.io.B).toString(16))
-        // print(dut.lut.io.tB.peek())
-        // print(dut.lut.io.tC.peek())
-        // println(dut.lut.io.tD.peek())
+        val A = dut.io.A.peek().litValue.toInt
+        val B = dut.io.B.peek().litValue.toInt
+        val C = dut.io.C.peek().litValue.toInt
+        val D = dut.io.D.peek().litValue.toInt
+        print(f"${dut.io.n.peek().litValue.toInt}: ")
+        print(f"${A} ")
+        print(f"${B} ")
+        print(f"${C} ")
+        println(f"${D}")
+
         dut.clock.step()
+        n = n + 1
+        dut.io.n.poke(n.U)
       }
 
       dut.io.tx_enable.poke(false.B)
-
-      for (i <- 1 until 10) {
-        println(dut.lut.io.tA.peek())
-        // print(dut.lut.io.tB.peek())
-        // print(dut.lut.io.tC.peek())
-        // println(dut.lut.io.tD.peek())
-        dut.clock.step()
-      }
 
       println("All tests passed!")
     }

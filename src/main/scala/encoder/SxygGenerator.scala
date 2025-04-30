@@ -4,7 +4,7 @@ import chisel3._
 
 class SxygGenerator extends Module {
 	val io = IO(new Bundle {
-		val scrn = Input(UInt(33.W))
+		val scrn = Input(Vec(33, Bool()))
 		val sxn = Output(Vec(4, Bool()))
 		val syn = Output(Vec(4, Bool()))
 		val sgn = Output(Vec(4, Bool()))
