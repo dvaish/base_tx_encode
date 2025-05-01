@@ -4760,7 +4760,7 @@ module Encoder(
         _sd_io_sdn_2,
         _sd_io_sdn_1,
         _sd_io_sdn_0}),
-    .io_sdn_6_8   ({_sd_io_sdn_8, _sd_io_sdn_7, _sd_io_sdn_6}),
+    .io_sdn_6_8   ({_sd_io_sdn_6, _sd_io_sdn_7, _sd_io_sdn_8}),
     .io_tA        (_lut_io_tA),
     .io_tB        (_lut_io_tB),
     .io_tC        (_lut_io_tC),

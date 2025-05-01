@@ -63,7 +63,7 @@ class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) 
 
     lut.io.condition := ce.io.condition
     lut.io.sdn_5_0 := sd.io.sdn.asUInt(5, 0)
-    lut.io.sdn_6_8 := sd.io.sdn.asUInt(8, 6)
+    lut.io.sdn_6_8 := Reverse(sd.io.sdn.asUInt(8, 6))
 
 
     val abcd = Module(new AnBnCnDnGenerator())

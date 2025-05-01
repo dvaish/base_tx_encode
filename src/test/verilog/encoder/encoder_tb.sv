@@ -194,8 +194,9 @@ module Encoder_tb;
       @(posedge clock);  // Wait for output to settle
 
       // Log values to file
-      $fwrite(outfile, "%08b\t%d\t%d\t%d\t%d\n", io_tx_data, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
-
+      $fwrite(outfile, "%01b%01b%01b: ", dut.sd.cs_n_1_0, dut.sd.cs_n_1_1, dut.sd.cs_n_1_2);
+      $fwrite(outfile, "\t%d\t%d\t%d\t%d\n", $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+      
 
       // io_tx_enable <= 0;
     end
