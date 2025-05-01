@@ -1,6 +1,7 @@
 package encoder
 
 import chisel3._
+import chisel3.util.ShiftRegister
 
 class ScGenerator extends Module {
 
@@ -18,6 +19,9 @@ class ScGenerator extends Module {
         val scn = Output(Vec(8, Bool()))
     })
 
+    val syn_1 = ShiftRegister(io.syn, 1)
+
+
     for (i <- 4 to 7) {
         when (io.tx_enable) {
             io.scn(i) := io.sxn(i-4)
@@ -29,10 +33,10 @@ class ScGenerator extends Module {
     for (i <- 1 to 3) {
         when (io.tx_mode === SEND_Z) {
             io.scn(i) := 0.B
-        } .elsewhen ((io.n - io.n0) % 2.U === 0.U) {
+        } .elsewhen (((io.n - io.n0) % 2.U) === 0.U) {
             io.scn(i) := io.syn(i)
         } .otherwise {
-            io.scn(i) := io.syn(i) ^ 1.B
+            io.scn(i) := syn_1(i) ^ 1.B
         }
     }
 

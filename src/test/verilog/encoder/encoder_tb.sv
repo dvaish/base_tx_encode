@@ -1,5 +1,5 @@
-// `timescale 1ns/10ps
-// `include "Encoder.sv"
+`timescale 1ns/10ps
+`include "/scratch/eecs251b-aac/base_tx_encode/Encoder.sv"
 
 // // vcs -full64 src/test/verilog/encoder/encoder_tb.sv -sverilog +incdir+. -R
 
@@ -150,6 +150,9 @@ module Encoder_tb;
     .io_D(io_D)
   );
 
+  wire [7:0] tx_data;
+  assign tx_data = 8'b11110000;
+
   // File handler
   integer outfile;
 
@@ -178,21 +181,23 @@ module Encoder_tb;
     io_loc_rcvr_status = 1;
 
     repeat (4) @(posedge clock);
-    reset = 0;
+    reset <= 0;
+
+    repeat (1) @(posedge clock);
 
     // Stimulate with a range of input values
     for (i = 0; i < 256; i=i+1) begin
-      @(posedge clock);
       io_tx_data <= i[7:0];
       io_tx_enable <= 1;
+      io_n <= io_n + 1;
 
       @(posedge clock);  // Wait for output to settle
 
       // Log values to file
-      $fwrite(outfile, "%08b\t%d\t%d\t%d\t%d\n", io_tx_data, $signed(io_A), $signed(io_B), $signed(io_C), $signed(io_D));
+      $fwrite(outfile, "%08b\t%d\t%d\t%d\t%d\n", io_tx_data, $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
 
 
-      io_tx_enable <= 0;
+      // io_tx_enable <= 0;
     end
 
     $fclose(outfile);

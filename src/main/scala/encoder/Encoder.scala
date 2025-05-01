@@ -1,6 +1,7 @@
 package encoder
 
 import chisel3._
+import chisel3.util._
 import _root_.circt.stage.ChiselStage
 import chisel3.util.ShiftRegister
 import chisel3.util.ShiftRegisters
@@ -59,6 +60,7 @@ class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) 
 
     val lut = Module(new LookupTableModule())
 
+
     lut.io.condition := ce.io.condition
     lut.io.sdn_5_0 := sd.io.sdn.asUInt(5, 0)
     lut.io.sdn_6_8 := sd.io.sdn.asUInt(8, 6)
@@ -104,7 +106,7 @@ class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) 
  */
 object Encoder extends App {
   ChiselStage.emitSystemVerilogFile(
-    new Encoder,
+    new Encoder(true, 1.U(33.W), false),
     firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info")
   )
 }

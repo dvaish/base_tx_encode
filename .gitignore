@@ -359,3 +359,5 @@ simv
 *.daidir
 obj_dir
 csrc
+
+*.txt
