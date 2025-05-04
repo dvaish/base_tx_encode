@@ -1,14 +1,25 @@
+# .PHONY: run clean test
+
+# run:
+# 	sbt run
+# 	vcs -full64 src/test/verilog/encoder/encoder_tb.sv -sverilog +incdir+. -R
+
+# test: 
+# 	vcs -full64 src/test/verilog/encoder/encoder_tb.sv -sverilog +incdir+. -R
+
+# clean:
+# 	@rm -r *.trn *.dsn *.key simv *.daidir obj_dir csrc .simvision simvision* 
+
+
 .PHONY: run clean test
 
 run:
 	sbt run
-	vcs -full64 src/test/verilog/encoder/encoder_tb.sv -sverilog +incdir+. -R
+	vcs -full64 src/test/verilog/encoder/encoder_txrx_tb.sv -sverilog +incdir+. -R
+	cp Encoder_TXRX_SM.sv /scratch/eecs251b-abg/sp25-chipyard-aniket-sadashiva/vlsi/encoder
 
 test: 
-	vcs -full64 src/test/verilog/encoder/encoder_tb.sv -sverilog +incdir+. -R
+	vcs -full64 src/test/verilog/encoder/encoder_txrx_tb.sv -sverilog +incdir+. -R
 
 clean:
-	@rm -r *.trn *.dsn *.key simv *.daidir obj_dir csrc .simvision simvision* 
-
-
-test
+	@rm -r *.trn *.dsn *.key simv *.daidir obj_dir csrc .simvision simvision*
