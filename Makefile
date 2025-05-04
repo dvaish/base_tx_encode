@@ -11,3 +11,4 @@ clean:
 	@rm -r *.trn *.dsn *.key simv *.daidir obj_dir csrc .simvision simvision* 
 
 
+test
