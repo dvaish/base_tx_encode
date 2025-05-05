@@ -36,7 +36,7 @@ module encoder_txrx_tb;
   wire        io_rx_symb_vector_ready;
   wire        io_col;
   wire        io_tx_symb_vector_valid;
-  wire        io_tx_symb_vector_ready;
+  reg        io_tx_symb_vector_ready;
   wire [2:0]  io_tx_symb_vector_bits_0;
   wire [2:0]  io_tx_symb_vector_bits_1;
   wire [2:0]  io_tx_symb_vector_bits_2;
@@ -76,7 +76,7 @@ module encoder_txrx_tb;
     .io_rxerror_status(io_rxerror_status),
     .io_rx_symb_vector_ready(io_rx_symb_vector_ready),
     .io_col(io_col),
-    .io_tx_symb_vector_ready(1'b1),  // Always ready to receive
+    .io_tx_symb_vector_ready(io_tx_symb_vector_ready),  // Always ready to receive
     .io_tx_symb_vector_valid(io_tx_symb_vector_valid),
     .io_tx_symb_vector_bits_0(io_tx_symb_vector_bits_0),
     .io_tx_symb_vector_bits_1(io_tx_symb_vector_bits_1),
@@ -86,29 +86,34 @@ module encoder_txrx_tb;
 
   task test_RESET();
     reset <= 1;
+    io_pcs_reset <= 1;
     repeat (2) @(posedge clock);
     reset <= 0;
-    repeat (2) @(posedge clock);
+    io_pcs_reset <= 0;
+    
+    // repeat (2) @(posedge clock);
   endtask
 
   task test_NORMAL_TX();
     test_RESET();
 
-    io_tx_enable        <= 1;
-    io_tx_mode          <= 1;
+    io_tx_enable        <= 0;
+    io_tx_mode          <= 0;
     io_tx_error         <= 0;
-    io_symb_timer_done  <= 1;
+    io_symb_timer_done  <= 0;
 
     // TX input data sequence
     
-    tx_data_seq[0] = 8'hAA;
-    tx_data_seq[1] = 8'hF0;
-    tx_data_seq[2] = 8'h0F;
-    tx_data_seq[3] = 8'hCC;
+    tx_data_seq[0] = 8'h00;
+    tx_data_seq[1] = 8'h01;
+    tx_data_seq[2] = 8'h02;
+    tx_data_seq[3] = 8'h03;
 
     
-    for (i = 0; i < 4; i = i + 1) begin
-      io_txd <= tx_data_seq[i];
+    for (i = 0; i < 10; i = i + 1) begin
+      io_tx_enable        <= 1;
+      io_txd <= tx_data_seq[i%4];
+      io_tx_symb_vector_ready <= 1;
       @(posedge clock);
 
       if (io_tx_symb_vector_valid) begin
@@ -124,7 +129,7 @@ module encoder_txrx_tb;
       end
     end
 
-    io_tx_enable <= 0;
+    //io_tx_enable <= 0;
     @(posedge clock);
   endtask
 
@@ -135,7 +140,7 @@ module encoder_txrx_tb;
     // Initial input state
     reset                   = 1;
     io_tx_enable            = 0;
-    io_tx_mode              = 1;
+    io_tx_mode              = 0;
     io_tx_error             = 0;
     io_txd                  = 8'b0;
     io_n                    = 0;
@@ -148,7 +153,9 @@ module encoder_txrx_tb;
     io_rx_symb_vector_bits_2 = 3'd0;
     io_rx_symb_vector_bits_3 = 3'd0;
     io_decoded_rx_symb_vector = 8'd0;
-    io_pcs_reset            = 0;
+    io_pcs_reset            = 1;
+    io_tx_symb_vector_ready = 0;
+    
 
     test_NORMAL_TX();
 

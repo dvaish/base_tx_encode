@@ -20,6 +20,7 @@ class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) 
         val B = Output(SInt(7.W)) // 
         val C = Output(SInt(7.W)) // 
         val D = Output(SInt(7.W)) // 
+        val recovered_tx_data = Output(UInt(8.W))
     })
 
     val lfsr = Module(new SideStreamScrambler(master, init))
@@ -74,6 +75,20 @@ class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) 
     abcd.io.tB := lut.io.tB
     abcd.io.tC := lut.io.tC
     abcd.io.tD := lut.io.tD
+
+    val descrambler = Module(new Descrambler())
+
+    descrambler.io.tx_enable := io.tx_enable
+    descrambler.io.scn := sc.io.scn
+    descrambler.io.sdn := sd.io.sdn
+    descrambler.io.loc_rcvr_status := io.loc_rcvr_status
+    io.recovered_tx_data := descrambler.io.recovered_tx_data
+
+
+    // Internal wires for testbench inspection
+    // val recovered_tx_data = descrambler.io.recovered_tx_data
+    val recovered_tx_error = descrambler.io.recovered_tx_error
+
 
     if (filter) {
 

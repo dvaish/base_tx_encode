@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-`include "/scratch/eecs251b-aac/base_tx_encode/Encoder.sv"
+`include "/scratch/eecs251b-abg/base_tx_encode/Encoder.sv"
 
 // // vcs -full64 src/test/verilog/encoder/encoder_tb.sv -sverilog +incdir+. -R
 
@@ -161,7 +161,7 @@ module Encoder_tb;
     $dumpvars(0, Encoder_tb);
 
     // Open output file
-    outfile = $fopen("encoder_output.txt", "w");
+    outfile = $fopen("encoder_output.txt.txt", "w");
     if (!outfile) begin
       $display("ERROR: Failed to open output file.");
       $finish;
@@ -194,8 +194,13 @@ module Encoder_tb;
       @(posedge clock);  // Wait for output to settle
 
       // Log values to file
-      $fwrite(outfile, "%01b%01b%01b: ", dut.sd.cs_n_1_0, dut.sd.cs_n_1_1, dut.sd.cs_n_1_2);
-      $fwrite(outfile, "\t%d\t%d\t%d\t%d\n", $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+      // $fwrite(outfile, "%01b%01b%01b: ", dut.sd.cs_n_1_0, dut.sd.cs_n_1_1, dut.sd.cs_n_1_2);
+      $fwrite(outfile, "%b", dut.sd.io_tx_data);
+      $fwrite(outfile, "\t%d\t%d\t%d\t%d", $signed(dut.lut.io_tA), $signed(dut.lut.io_tB), $signed(dut.lut.io_tC), $signed(dut.lut.io_tD));
+      $fwrite(outfile, "\t%01b%01b%01b%01b%01b%01b%01b%01b",dut.sc.io_scn_7,dut.sc.io_scn_6,dut.sc.io_scn_5,dut.sc.io_scn_4,dut.sc.io_scn_3,dut.sc.io_scn_2,dut.sc.io_scn_1,dut.sc.io_scn_0);
+      $fwrite(outfile, "\t%01b%01b%01b%01b%01b%01b%01b%01b%01b",dut.sd.io_sdn_8,dut.sd.io_sdn_7,dut.sd.io_sdn_6,dut.sd.io_sdn_5,dut.sd.io_sdn_4,dut.sd.io_sdn_3,dut.sd.io_sdn_2,dut.sd.io_sdn_1,dut.sd.io_sdn_0);
+      $fwrite(outfile, "\t%b\n", dut.descrambler.io_recovered_tx_data);
+      //$fwrite(outfile, "\t%01b\n", dut.sc.io_scn_0);
       
 
       // io_tx_enable <= 0;
