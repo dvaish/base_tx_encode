@@ -119,9 +119,9 @@ class Encoder(master: Boolean = true, init: UInt = 1.U, filter: Boolean = true) 
 /**
  * Generate Verilog sources and save it in file GCD.v
  */
-object Encoder extends App {
-  ChiselStage.emitSystemVerilogFile(
-    new Encoder(true, 1.U(33.W), false),
-    firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info")
-  )
-}
+// object Encoder extends App {
+//   ChiselStage.emitSystemVerilogFile(
+//     new Encoder(true, 1.U(33.W), false),
+//     firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info")
+//   )
+// }

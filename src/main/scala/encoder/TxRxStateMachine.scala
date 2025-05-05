@@ -26,7 +26,7 @@ class TxRxStateMachine extends Module {
 
     val col                       = Output(Bool())                        // Collision indication
     val tx_symb_vector            = Decoupled(Vec(4, SInt(3.W)))          // Vector of quinary symbols for transmit
-
+    
   })
   // TX STATE MACHINE
    io.tx_symb_vector.noenq()
@@ -61,7 +61,7 @@ class TxRxStateMachine extends Module {
       io.tx_symb_vector.enq(V(+2, +2, +2, +2))
 
       when (!io.tx_error && PUDR) {
-        txstate := PcsTxState.SSD1_VECTOR
+        txstate := PcsTxState.SSD2_VECTOR
       }.elsewhen (io.tx_error && PUDR) {
         txstate := PcsTxState.SSD2_VECTOR_ERROR
       }.otherwise{

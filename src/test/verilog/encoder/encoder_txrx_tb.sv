@@ -117,13 +117,15 @@ module encoder_txrx_tb;
       @(posedge clock);
 
       if (io_tx_symb_vector_valid) begin
-        $display("Cycle %0t ns | TXD = 0x%0h | Encoded => A = %0d, B = %0d, C = %0d, D = %0d",
+        $display("Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d",
           $time, io_txd,
-          $signed(io_tx_symb_vector_bits_0),
-          $signed(io_tx_symb_vector_bits_1),
-          $signed(io_tx_symb_vector_bits_2),
-          $signed(io_tx_symb_vector_bits_3)
+          $signed(dut.io_tx_symb_vector_bits_0),
+          $signed(dut.io_tx_symb_vector_bits_1),
+          $signed(dut.io_tx_symb_vector_bits_2),
+          $signed(dut.io_tx_symb_vector_bits_3)
         );
+        // $display("%d\t%d\t%d\t%d\t%d",dut.encoder.io_recovered_tx_data,$signed(dut.encoder.io_tA))//dut.encoder.io_tB,dut.encoder.io_tC,dut.encoder.io_tD);
+        $display($signed(dut.fsm.io_encoded_tx_symb_vector_0),$signed(dut.fsm.io_encoded_tx_symb_vector_1),$signed(dut.fsm.io_encoded_tx_symb_vector_2),$signed(dut.fsm.io_encoded_tx_symb_vector_3));
       end else begin
         $display("Cycle %0t ns | TXD = 0x%0h | Output not valid yet", $time, io_txd);
       end

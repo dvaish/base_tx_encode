@@ -35,10 +35,11 @@ class Encoder_TXRX_SM(master: Boolean = true, init: UInt = 1.U(33.W)) extends Mo
     val n = Input(UInt(32.W))
     val n0 = Input(UInt(32.W))
     val loc_rcvr_status = Input(Bool())
+    val recovered_tx_data = Output(UInt(8.W))
   })
 
   // Instantiate Encoder
-  val encoder = Module(new Encoder(master, init)) // default init value used
+  val encoder = Module(new Encoder(master, init,false)) // default init value used
   encoder.io.tx_enable := io.tx_enable
   encoder.io.tx_mode := io.tx_mode
   encoder.io.tx_error := io.tx_error
@@ -46,6 +47,7 @@ class Encoder_TXRX_SM(master: Boolean = true, init: UInt = 1.U(33.W)) extends Mo
   encoder.io.n := io.n
   encoder.io.n0 := io.n0
   encoder.io.loc_rcvr_status := io.loc_rcvr_status
+  io.recovered_tx_data := encoder.io.recovered_tx_data
 
   // Connect encoder output as encoded_tx_symb_vector
   val encoded_tx_symb_vector = Wire(Vec(4, SInt(3.W)))
