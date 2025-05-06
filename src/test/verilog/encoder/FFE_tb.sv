@@ -102,22 +102,25 @@ module FFE_tb;
     io_in_bits_1 = 0;
     io_in_bits_2 = 0;
     io_in_bits_3 = 0;
+    io_in_valid = 0;
     repeat (5) @(posedge clock);
     reset = 0;
+    io_in_valid = 1;
+    
 
     // Write output header
     $fwrite(outfile, "OUT_VALID\tOUT_0\tOUT_1\tOUT_2\tOUT_3\n");
 
     // Read and drive input from file
     while (!$feof(infile)) begin
-      r = $fscanf(infile, "%d\t%h\t%h\t%h\t%h\n", io_in_valid, io_in_bits_0, io_in_bits_1, io_in_bits_2, io_in_bits_3);
+      r = $fscanf(infile, "%d\t%d\t%d\t%d\n", io_in_bits_0, io_in_bits_1, io_in_bits_2, io_in_bits_3);
       @(posedge clock);
 
       // Capture output
-      $fwrite(outfile, "%0d\t%02x\t%02x\t%02x\t%02x\n",
+      $fwrite(outfile, "%0d\t%0d\t%0d\t%0d\t%0d\n",
               io_out_valid, io_out_bits_0, io_out_bits_1, io_out_bits_2, io_out_bits_3);
-      $fwrite(outfile, "%h\t%h\t%h\t%h\t%h\n",
-              dut._firFilters_1.io_weights_0, dut._firFilters_1.io_weights_1, dut._firFilters_1.io_weights_2, dut._firFilters_1.io_weights_3, dut._firFilters_1.io_weights_4);
+      // $fwrite(outfile, "%h\t%h\t%h\t%h\t%h\n",
+      //         dut._firFilters_1.io_weights_0, dut._firFilters_1.io_weights_1, dut._firFilters_1.io_weights_2, dut._firFilters_1.io_weights_3, dut._firFilters_1.io_weights_4);
 
     end
 
