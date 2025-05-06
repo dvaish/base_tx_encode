@@ -116,6 +116,9 @@ module FFE_tb;
       // Capture output
       $fwrite(outfile, "%0d\t%02x\t%02x\t%02x\t%02x\n",
               io_out_valid, io_out_bits_0, io_out_bits_1, io_out_bits_2, io_out_bits_3);
+      $fwrite(outfile, "%h\t%h\t%h\t%h\t%h\n",
+              dut._firFilters_1.io_weights_0, dut._firFilters_1.io_weights_1, dut._firFilters_1.io_weights_2, dut._firFilters_1.io_weights_3, dut._firFilters_1.io_weights_4);
+
     end
 
     $fclose(infile);
