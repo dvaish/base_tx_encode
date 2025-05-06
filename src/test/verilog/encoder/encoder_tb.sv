@@ -161,7 +161,7 @@ module Encoder_tb;
     $dumpvars(0, Encoder_tb);
 
     // Open output file
-    outfile = $fopen("encoder_output.txt.txt", "w");
+    outfile = $fopen("encoder_output.txt", "w");
     if (!outfile) begin
       $display("ERROR: Failed to open output file.");
       $finish;

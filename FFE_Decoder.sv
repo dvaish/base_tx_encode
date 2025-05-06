@@ -1,82 +1,90 @@
-`timescale 1ns/1ps
-`include "/scratch/eecs251b-abg/base_tx_encode/FFE.sv"
-`include "/scratch/eecs251b-abg/base_tx_encode/LaPDFD.sv"
+module FFE_LaPDFD_Top (
+  input         clock,
+  input         reset,
 
-module FFE_Decoder (
-    input         clock,
-    input         reset,
-    // FFE module I/Os
-    input         io_in_valid,
-    input  [7:0]  io_in_bits_0,
-    input  [7:0]  io_in_bits_1,
-    input  [7:0]  io_in_bits_2,
-    input  [7:0]  io_in_bits_3,
-    output        io_out_valid,
-    output [7:0]  io_out_bits_0,
-    output [7:0]  io_out_bits_1,
-    output [7:0]  io_out_bits_2,
-    output [7:0]  io_out_bits_3,
-    // LaPDFD module I/Os
-    input  [7:0]  io_taps_0,
-    input  [7:0]  io_taps_1,
-    input  [7:0]  io_taps_2,
-    input  [7:0]  io_taps_3,
-    input  [7:0]  io_taps_4,
-    input  [7:0]  io_taps_5,
-    input  [7:0]  io_taps_6,
-    input  [7:0]  io_taps_7,
-    input  [7:0]  io_taps_8,
-    input  [7:0]  io_taps_9,
-    input  [7:0]  io_taps_10,
-    input  [7:0]  io_taps_11,
-    input  [7:0]  io_taps_12,
-    input  [7:0]  io_taps_13,
-    output [11:0] io_rxSymbols,
-    output        io_rxValid
+  // TileLink interface for FFE register control (can be stubbed or connected)
+  input         auto_reg_in_a_valid,
+  input  [2:0]  auto_reg_in_a_bits_opcode,
+  input  [2:0]  auto_reg_in_a_bits_param,
+  input  [1:0]  auto_reg_in_a_bits_size,
+  input  [2:0]  auto_reg_in_a_bits_source,
+  input  [12:0] auto_reg_in_a_bits_address,
+  input  [7:0]  auto_reg_in_a_bits_mask,
+  input  [63:0] auto_reg_in_a_bits_data,
+  input         auto_reg_in_a_bits_corrupt,
+  input         auto_reg_in_d_ready,
+  output        auto_reg_in_a_ready,
+  output        auto_reg_in_d_valid,
+  output [2:0]  auto_reg_in_d_bits_opcode,
+  output [1:0]  auto_reg_in_d_bits_size,
+  output [2:0]  auto_reg_in_d_bits_source,
+
+  // LaPDFD tap values (external input)
+  input  [7:0]  io_taps_0,
+  input  [7:0]  io_taps_1,
+  input  [7:0]  io_taps_2,
+  input  [7:0]  io_taps_3,
+  input  [7:0]  io_taps_4,
+  input  [7:0]  io_taps_5,
+  input  [7:0]  io_taps_6,
+  input  [7:0]  io_taps_7,
+  input  [7:0]  io_taps_8,
+  input  [7:0]  io_taps_9,
+  input  [7:0]  io_taps_10,
+  input  [7:0]  io_taps_11,
+  input  [7:0]  io_taps_12,
+  input  [7:0]  io_taps_13,
+
+  // Final LaPDFD output
+  output [11:0] io_rxSymbols,
+  output        io_rxValid
 );
 
-  // Internal signals for connecting FFE and LaPDFD
-  wire ffe_io_out_valid;
-  wire [7:0] ffe_io_out_bits_0;
-  wire [7:0] ffe_io_out_bits_1;
-  wire [7:0] ffe_io_out_bits_2;
-  wire [7:0] ffe_io_out_bits_3;
-  
-  wire [7:0] laPdfd_io_rxSamples_0;
-  wire [7:0] laPdfd_io_rxSamples_1;
-  wire [7:0] laPdfd_io_rxSamples_2;
-  wire [7:0] laPdfd_io_rxSamples_3;
-  
-  // Instantiate FFE Module
+  // Intermediate valid signal from FFE to LaPDFD
+  wire         ffe_out_valid;
+  wire  [7:0]  ffe_out_0, ffe_out_1, ffe_out_2, ffe_out_3;
+
+  // Instantiate FFE
   FFE ffe_inst (
     .clock(clock),
     .reset(reset),
-    .io_in_valid(io_in_valid),
-    .io_in_bits_0(io_in_bits_0),
-    .io_in_bits_1(io_in_bits_1),
-    .io_in_bits_2(io_in_bits_2),
-    .io_in_bits_3(io_in_bits_3),
-    .io_out_valid(ffe_io_out_valid),
-    .io_out_bits_0(ffe_io_out_bits_0),
-    .io_out_bits_1(ffe_io_out_bits_1),
-    .io_out_bits_2(ffe_io_out_bits_2),
-    .io_out_bits_3(ffe_io_out_bits_3)
+    .auto_reg_in_a_ready(auto_reg_in_a_ready),
+    .auto_reg_in_a_valid(auto_reg_in_a_valid),
+    .auto_reg_in_a_bits_opcode(auto_reg_in_a_bits_opcode),
+    .auto_reg_in_a_bits_param(auto_reg_in_a_bits_param),
+    .auto_reg_in_a_bits_size(auto_reg_in_a_bits_size),
+    .auto_reg_in_a_bits_source(auto_reg_in_a_bits_source),
+    .auto_reg_in_a_bits_address(auto_reg_in_a_bits_address),
+    .auto_reg_in_a_bits_mask(auto_reg_in_a_bits_mask),
+    .auto_reg_in_a_bits_data(auto_reg_in_a_bits_data),
+    .auto_reg_in_a_bits_corrupt(auto_reg_in_a_bits_corrupt),
+    .auto_reg_in_d_ready(auto_reg_in_d_ready),
+    .auto_reg_in_d_valid(auto_reg_in_d_valid),
+    .auto_reg_in_d_bits_opcode(auto_reg_in_d_bits_opcode),
+    .auto_reg_in_d_bits_size(auto_reg_in_d_bits_size),
+    .auto_reg_in_d_bits_source(auto_reg_in_d_bits_source),
+
+    .io_in_valid(1'b1),  // Assuming always valid input for demo
+    .io_in_bits_0(8'h00),
+    .io_in_bits_1(8'h00),
+    .io_in_bits_2(8'h00),
+    .io_in_bits_3(8'h00),
+
+    .io_out_valid(ffe_out_valid),
+    .io_out_bits_0(ffe_out_0),
+    .io_out_bits_1(ffe_out_1),
+    .io_out_bits_2(ffe_out_2),
+    .io_out_bits_3(ffe_out_3)
   );
 
-  // Assign FFE output to LaPDFD input signals
-  assign laPdfd_io_rxSamples_0 = ffe_io_out_bits_0;
-  assign laPdfd_io_rxSamples_1 = ffe_io_out_bits_1;
-  assign laPdfd_io_rxSamples_2 = ffe_io_out_bits_2;
-  assign laPdfd_io_rxSamples_3 = ffe_io_out_bits_3;
-
-  // Instantiate LaPDFD Module
+  // Instantiate LaPDFD
   LaPDFD lapdfd_inst (
     .clock(clock),
     .reset(reset),
-    .io_rxSamples_0(laPdfd_io_rxSamples_0),
-    .io_rxSamples_1(laPdfd_io_rxSamples_1),
-    .io_rxSamples_2(laPdfd_io_rxSamples_2),
-    .io_rxSamples_3(laPdfd_io_rxSamples_3),
+    .io_rxSamples_0(ffe_out_0),
+    .io_rxSamples_1(ffe_out_1),
+    .io_rxSamples_2(ffe_out_2),
+    .io_rxSamples_3(ffe_out_3),
     .io_taps_0(io_taps_0),
     .io_taps_1(io_taps_1),
     .io_taps_2(io_taps_2),
@@ -94,12 +102,5 @@ module FFE_Decoder (
     .io_rxSymbols(io_rxSymbols),
     .io_rxValid(io_rxValid)
   );
-
-  // Connect the outputs to the overall module outputs
-  assign io_out_valid = ffe_io_out_valid;
-  assign io_out_bits_0 = ffe_io_out_bits_0;
-  assign io_out_bits_1 = ffe_io_out_bits_1;
-  assign io_out_bits_2 = ffe_io_out_bits_2;
-  assign io_out_bits_3 = ffe_io_out_bits_3;
 
 endmodule
