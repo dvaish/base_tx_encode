@@ -361,3 +361,5 @@ obj_dir
 csrc
 
 *.txt
+
+!table40_10.txt
