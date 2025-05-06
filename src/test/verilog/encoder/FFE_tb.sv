@@ -109,7 +109,7 @@ module FFE_tb;
     
 
     // Write output header
-    $fwrite(outfile, "OUT_VALID\tOUT_0\tOUT_1\tOUT_2\tOUT_3\n");
+    //$fwrite(outfile, "OUT_VALID\tOUT_0\tOUT_1\tOUT_2\tOUT_3\n");
 
     // Read and drive input from file
     while (!$feof(infile)) begin
@@ -117,8 +117,11 @@ module FFE_tb;
       @(posedge clock);
 
       // Capture output
-      $fwrite(outfile, "%0d\t%0d\t%0d\t%0d\t%0d\n",
-              io_out_valid, io_out_bits_0, io_out_bits_1, io_out_bits_2, io_out_bits_3);
+      // $fwrite(outfile, "%0b\t%0d\t%0d\t%0d\t%0d\n",
+      //         io_out_valid, $signed(io_out_bits_0), $signed(io_out_bits_1), $signed(io_out_bits_2), $signed(io_out_bits_3));
+      if(io_out_valid)
+        $fwrite(outfile, "%0d\t%0d\t%0d\t%0d\n",
+              $signed(io_out_bits_0), $signed(io_out_bits_1), $signed(io_out_bits_2), $signed(io_out_bits_3));
       // $fwrite(outfile, "%h\t%h\t%h\t%h\t%h\n",
       //         dut._firFilters_1.io_weights_0, dut._firFilters_1.io_weights_1, dut._firFilters_1.io_weights_2, dut._firFilters_1.io_weights_3, dut._firFilters_1.io_weights_4);
 
