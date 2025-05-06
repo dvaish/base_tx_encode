@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
-`include "/scratch/eecs251b-abg/base_tx_encode/FFE.sv"
+// `include "/scratch/eecs251b-abg/base_tx_encode/FFE.sv"
+`include "/scratch/eecs251b-aac/base_tx_encode/FFE.sv"
 module FFE_tb;
 
   parameter CLOCK_PERIOD = 8;
