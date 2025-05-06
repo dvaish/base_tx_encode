@@ -21,3 +21,5 @@ symbols = np.array(symbols)
 
 rx = [Channel(data=symbols[:, i]).simulate().waveform for i in range(4)]
 rx = np.array(rx)
+
+np.savetxt("ffe_input.txt", rx.T)
