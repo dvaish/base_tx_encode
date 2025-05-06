@@ -363,3 +363,4 @@ csrc
 *.txt
 
 !table40_10.txt
+!tap_vector.txt
