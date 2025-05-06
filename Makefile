@@ -23,3 +23,8 @@ test:
 
 clean:
 	@rm -r *.trn *.dsn *.key simv *.daidir obj_dir csrc .simvision simvision*
+
+test_ffe:
+	vcs -full64 src/test/verilog/encoder/FFE_tb.sv -sverilog +incdir+. -R
+test_fd:
+	vcs -full64 /scratch/eecs251b-abg/base_tx_encode/FFE_Decoder_tb.sv -sverilog +incdir+. -R
