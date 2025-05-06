@@ -10,10 +10,10 @@ class PulseShapingFilter extends Module {
         val B = Input(SInt(3.W))
         val C = Input(SInt(3.W))
         val D = Input(SInt(3.W))
-        val Ashaped = Output(SInt(5.W))
-        val Bshaped = Output(SInt(5.W))
-        val Cshaped = Output(SInt(5.W))
-        val Dshaped = Output(SInt(5.W))
+        val Ashaped = Output(SInt(6.W))
+        val Bshaped = Output(SInt(6.W))
+        val Cshaped = Output(SInt(6.W))
+        val Dshaped = Output(SInt(6.W))
     })
 
     val Areg = RegInit(0.S(3.W))
@@ -31,5 +31,5 @@ class PulseShapingFilter extends Module {
     io.Cshaped := (io.C * 3.S) + Creg 
     io.Dshaped := (io.D * 3.S) + Dreg 
 
-    
+
 }

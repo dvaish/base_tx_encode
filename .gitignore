@@ -365,4 +365,5 @@ csrc
 !table40_10.txt
 !tap_vector.txt
 !decoded_output.txt
+!encoder_txrx_output.txt
 *.png
