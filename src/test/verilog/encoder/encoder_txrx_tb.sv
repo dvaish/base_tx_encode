@@ -110,14 +110,17 @@ module encoder_txrx_tb;
     tx_data_seq[3] = 8'h03;
 
     
-    for (i = 0; i < 10; i = i + 1) begin
+    for (i = 0; i < 256+3; i = i + 1) begin
       io_tx_enable        <= 1;
-      io_txd <= tx_data_seq[i%4];
+      if (i < 3)
+        io_txd <= 8'b0;
+      else
+        io_txd <= (i-3); // tx_data_seq[i%4];
       io_tx_symb_vector_ready <= 1;
       @(posedge clock);
 
       if (io_tx_symb_vector_valid) begin
-        $display("Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d",
+        $fwrite(outfile, "Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d\n",
           $time, io_txd,
           $signed(dut.io_tx_symb_vector_bits_0),
           $signed(dut.io_tx_symb_vector_bits_1),
@@ -129,15 +132,24 @@ module encoder_txrx_tb;
       end else begin
         $display("Cycle %0t ns | TXD = 0x%0h | Output not valid yet", $time, io_txd);
       end
+
     end
 
     //io_tx_enable <= 0;
     @(posedge clock);
   endtask
 
+  integer outfile;
+
   initial begin
     $dumpfile("waves.vcd");
     $dumpvars(0, encoder_txrx_tb);
+
+    outfile = $fopen("encoder_txrx_output.txt", "w");
+    if (!outfile) begin
+      $display("ERROR: Failed to open output file.");
+      $finish;
+    end
 
     // Initial input state
     reset                   = 1;
