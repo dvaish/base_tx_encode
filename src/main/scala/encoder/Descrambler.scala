@@ -1,7 +1,11 @@
 package encoder
 
 import chisel3._
+import chisel3.util._
+import _root_.circt.stage.ChiselStage
 import chisel3.util.ShiftRegister
+import chisel3.util.ShiftRegisters
+
 class Descrambler extends Module {
   val io = IO(new Bundle {
     val tx_enable = Input(Bool())
@@ -53,4 +57,10 @@ class Descrambler extends Module {
   }
 
   io.recovered_tx_error := tx_error
+}
+object Descrambler extends App {
+  ChiselStage.emitSystemVerilogFile(
+    new Descrambler(),
+    firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info")
+  )
 }

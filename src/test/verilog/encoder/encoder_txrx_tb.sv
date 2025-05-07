@@ -117,6 +117,7 @@ module encoder_txrx_tb;
       if (i < 10) begin
         io_txd <= 8'b0;
         io_tx_enable  <= 0;
+        $fwrite(outfile_descrambler,"%b %b%b%b%b%b%b%b%b %b%b%b%b%b%b%b%b%b %b\n",dut.encoder.io_tx_enable,dut.encoder.sc.io_scn_7,dut.encoder.sc.io_scn_6,dut.encoder.sc.io_scn_5,dut.encoder.sc.io_scn_4,dut.encoder.sc.io_scn_3,dut.encoder.sc.io_scn_2,dut.encoder.sc.io_scn_1,dut.encoder.sc.io_scn_0,dut.encoder.sd.io_sdn_8,dut.encoder.sd.io_sdn_7,dut.encoder.sd.io_sdn_6,dut.encoder.sd.io_sdn_5,dut.encoder.sd.io_sdn_4,dut.encoder.sd.io_sdn_3,dut.encoder.sd.io_sdn_2,dut.encoder.sd.io_sdn_1,dut.encoder.sd.io_sdn_0,dut.encoder.io_loc_rcvr_status);
         $fwrite(outfile, "Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d\n",
             $time, io_txd,
             $signed(dut.io_tx_symb_vector_bits_0),
@@ -133,6 +134,8 @@ module encoder_txrx_tb;
       @(posedge clock);
 
       //if (io_tx_symb_vector_valid) begin
+        $fwrite(outfile_descrambler,"%b %b%b%b%b%b%b%b%b %b%b%b%b%b%b%b%b%b %b\n",dut.encoder.io_tx_enable,dut.encoder.sc.io_scn_7,dut.encoder.sc.io_scn_6,dut.encoder.sc.io_scn_5,dut.encoder.sc.io_scn_4,dut.encoder.sc.io_scn_3,dut.encoder.sc.io_scn_2,dut.encoder.sc.io_scn_1,dut.encoder.sc.io_scn_0,dut.encoder.sd.io_sdn_8,dut.encoder.sd.io_sdn_7,dut.encoder.sd.io_sdn_6,dut.encoder.sd.io_sdn_5,dut.encoder.sd.io_sdn_4,dut.encoder.sd.io_sdn_3,dut.encoder.sd.io_sdn_2,dut.encoder.sd.io_sdn_1,dut.encoder.sd.io_sdn_0,dut.encoder.io_loc_rcvr_status);
+
         $fwrite(outfile, "Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d\n",
           $time, io_txd,
           $signed(dut.io_tx_symb_vector_bits_0),
@@ -163,6 +166,7 @@ module encoder_txrx_tb;
   endtask
 
   integer outfile;
+  integer outfile_descrambler;
 
   initial begin
     $dumpfile("waves.vcd");
@@ -173,7 +177,11 @@ module encoder_txrx_tb;
       $display("ERROR: Failed to open output file.");
       $finish;
     end
-
+    outfile_descrambler = $fopen("descrambler_input.txt", "w");
+    if (!outfile_descrambler) begin
+      $display("ERROR: Failed to open output file.");
+      $finish;
+    end
     // Initial input state
     reset                   = 1;
     io_tx_enable            = 0;

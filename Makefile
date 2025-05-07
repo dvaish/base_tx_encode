@@ -31,5 +31,7 @@ test_ffe:
 	vcs -full64 src/test/verilog/encoder/FFE_tb.sv -sverilog +incdir+. -R
 test_fd:
 	vcs -full64 src/test/verilog/encoder/lapdfd_tb.sv -sverilog +incdir+. -R
+test_des:
+	vcs -full64 src/test/verilog/encoder/descrambler_tb.sv -sverilog +incdir+. -R
 
 
