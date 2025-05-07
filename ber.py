@@ -27,7 +27,7 @@ def threshold(value):
         symbol = 2
     return symbol
 
-def align(a, b):
+def align(a, b, log=False):
     correlation = np.correlate(a, b, mode='full')
     delay = np.argmax(correlation)
     lag = delay - (len(b) - 1)
@@ -37,29 +37,52 @@ def align(a, b):
     else:
         b = b[-lag:][:len(a)]
         a = a[:len(b)]
-    print(np.max(correlation), np.dot(a, b))
+    if log:
+        print(np.max(correlation), np.dot(a, b))
     return a, b
 
 def ber(a, b):
     a, b = align(a, b)
     return np.mean(np.not_equal(a, b))
 
-def eye(received, transmitted):
-    received, transmitted = align(received, transmitted)
+def eye(received, transmitted=None, log=False):
+    if transmitted is not None:
+        received, transmitted = align(received, transmitted, log=log)
     for i in range(1, min(len(received), len(transmitted))-2):
         colors = ['C0', 'C1', 'C2', 'C3', 'C4']
         color = colors[int(transmitted[i]) + 2]
         plt.plot(received[i-1:i+2], alpha=0.5, color=color)
+    plt.savefig("eye.png")
+    plt.close()
     return
 
-
+symbols_aligned_sets = []
+decoded_aligned_sets = []
 for col in range(4):
     
     ffe_output = ffe[:, col]
     ffe_symbols = list(map(threshold, ffe_output))
     # print(np.max(correlation), np.dot(decoded[13:, col], symbols[:-18, col]))
-    eye(ffe_symbols, symbols[:, col])
-    plt.savefig(f"ffe_eye{col}.png")
+    eye(ffe_output, transmitted=symbols[:, col], log=True)
 
-    print(ber(ffe_symbols, symbols[:, col]))
-    print(ber(symbols[:, col], decoded[:, col]))
+    ffe_ber = ber(ffe_symbols, symbols[:, col])
+    symbol_ber = ber(symbols[:, col], decoded[:, col])
+
+    symbols_aligned, decoded_aligned = align(symbols[:, col], decoded[:, col])
+    decoded_aligned_sets.append(decoded_aligned[10:])
+    symbols_aligned_sets.append(symbols_aligned[10:])
+    plt.plot(symbols_aligned)
+    plt.plot(decoded_aligned)
+    plt.savefig(f"time_domain{col}.png")
+    plt.close()
+
+    print(f"FFE={round(ffe_ber, 3)}, TOTAL={round(symbol_ber, 3)}")
+
+for i in range(len(decoded)):
+    plt.plot(decoded[i-1:i+2, 4] // (2 ** 7), color='C0', alpha=0.5)
+plt.savefig("decoded.png")
+
+overall = (symbols_aligned_sets[0] == decoded_aligned_sets[0]) & \
+    (symbols_aligned_sets[1] == decoded_aligned_sets[1]) & \
+    (symbols_aligned_sets[2] == decoded_aligned_sets[2]) & \
+    (symbols_aligned_sets[3] == decoded_aligned_sets[3])

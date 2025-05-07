@@ -71,7 +71,7 @@ class Channel:
         self.upsample()
         if rx:
             # self.insertion_loss()
-            # self.simulate_channel_response()
+            self.simulate_channel_response()
             # self.simulate_test_setup()
             self.downsample()
             self.quantize(margin=margin, B=B)
