@@ -1,4 +1,9 @@
 package encoder
+import chisel3._
+import chisel3.util._
+import _root_.circt.stage.ChiselStage
+import chisel3.util.ShiftRegister
+import chisel3.util.ShiftRegisters
 class PulseShapingFilter extends Module {
   val io = IO(new Bundle {
     val A = Input(SInt(3.W))
