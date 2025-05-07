@@ -69,8 +69,8 @@ for col in range(4):
     symbol_ber = ber(symbols[:, col], decoded[:, col])
 
     symbols_aligned, decoded_aligned = align(symbols[:, col], decoded[:, col])
-    decoded_aligned_sets.append(decoded_aligned[10:])
-    symbols_aligned_sets.append(symbols_aligned[10:])
+    decoded_aligned_sets.append(decoded_aligned)
+    symbols_aligned_sets.append(symbols_aligned)
     plt.plot(symbols_aligned)
     plt.plot(decoded_aligned)
     plt.savefig(f"time_domain{col}.png")

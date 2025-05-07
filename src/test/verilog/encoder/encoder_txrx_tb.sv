@@ -30,6 +30,8 @@ module encoder_txrx_tb;
   reg         io_pcs_reset;
   reg [7:0] tx_data_seq[0:3];
   integer i;
+  integer j;
+  
   // Outputs
   wire [7:0]  io_rxd;
   wire        io_rx_dv, io_rx_er, io_rxerror_status;
@@ -145,9 +147,19 @@ module encoder_txrx_tb;
       // end
 
     end
+    
+    // for (j = 0; j < 20; j = j + 1) begin
+    //   io_tx_enable <= 0;
+    //   @(posedge clock);
 
-    //io_tx_enable <= 0;
-    @(posedge clock);
+    //   $fwrite(outfile, "Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d\n",
+    //       $time, io_txd,
+    //       $signed(dut.io_tx_symb_vector_bits_0),
+    //       $signed(dut.io_tx_symb_vector_bits_1),
+    //       $signed(dut.io_tx_symb_vector_bits_2),
+    //       $signed(dut.io_tx_symb_vector_bits_3)
+    //     );
+    // end
   endtask
 
   integer outfile;
