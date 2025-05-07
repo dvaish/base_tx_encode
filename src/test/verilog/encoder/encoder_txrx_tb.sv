@@ -110,16 +110,27 @@ module encoder_txrx_tb;
     tx_data_seq[3] = 8'h03;
 
     
-    for (i = 0; i < 4*256+3; i = i + 1) begin
-      io_tx_enable        <= 1;
-      if (i < 3)
+    for (i = 0; i < 4*256+10; i = i + 1) begin
+      //io_tx_enable        <= 1;
+      if (i < 10) begin
         io_txd <= 8'b0;
-      else
-        io_txd <= (i-3)%256; // tx_data_seq[i%4];
+        io_tx_enable  <= 0;
+        $fwrite(outfile, "Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d\n",
+            $time, io_txd,
+            $signed(dut.io_tx_symb_vector_bits_0),
+            $signed(dut.io_tx_symb_vector_bits_1),
+            $signed(dut.io_tx_symb_vector_bits_2),
+            $signed(dut.io_tx_symb_vector_bits_3)
+          );
+      end
+      else begin
+        io_txd <= (i-10)%256; // tx_data_seq[i%4];
+        io_tx_enable  <= 1;
+      end
       io_tx_symb_vector_ready <= 1;
       @(posedge clock);
 
-      if (io_tx_symb_vector_valid) begin
+      //if (io_tx_symb_vector_valid) begin
         $fwrite(outfile, "Cycle %0t ns | TXD = 0x%0h | Encoded => A = %d, B = %d, C = %d, D = %d\n",
           $time, io_txd,
           $signed(dut.io_tx_symb_vector_bits_0),
@@ -128,10 +139,10 @@ module encoder_txrx_tb;
           $signed(dut.io_tx_symb_vector_bits_3)
         );
         // $display("%d\t%d\t%d\t%d\t%d",dut.encoder.io_recovered_tx_data,$signed(dut.encoder.io_tA))//dut.encoder.io_tB,dut.encoder.io_tC,dut.encoder.io_tD);
-        $display($signed(dut.fsm.io_encoded_tx_symb_vector_0),$signed(dut.fsm.io_encoded_tx_symb_vector_1),$signed(dut.fsm.io_encoded_tx_symb_vector_2),$signed(dut.fsm.io_encoded_tx_symb_vector_3));
-      end else begin
-        $display("Cycle %0t ns | TXD = 0x%0h | Output not valid yet", $time, io_txd);
-      end
+      //   $display($signed(dut.fsm.io_encoded_tx_symb_vector_0),$signed(dut.fsm.io_encoded_tx_symb_vector_1),$signed(dut.fsm.io_encoded_tx_symb_vector_2),$signed(dut.fsm.io_encoded_tx_symb_vector_3));
+      // end else begin
+      //   $display("Cycle %0t ns | TXD = 0x%0h | Output not valid yet", $time, io_txd);
+      // end
 
     end
 
