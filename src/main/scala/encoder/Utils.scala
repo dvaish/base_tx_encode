@@ -33,7 +33,7 @@ object Utils {
   def saturatingSquare(data: SInt, outWidth: Int): UInt = {
     require(outWidth > 0, "Output width must be positive.")
 
-    val fullSquare = Wire(UInt((2 * data.getWidth).W))
+    val fullSquare = Wire(UInt((2 * data.getWidth + 2).W))
     fullSquare := (data * data).asUInt
 
     val maxVal = ((1 << outWidth) - 1).U

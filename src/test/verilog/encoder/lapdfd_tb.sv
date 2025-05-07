@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-`include "/scratch/eecs251b-abg/base_tx_encode/LaPDFD.sv"
+`include "/scratch/eecs251b-aac/base_tx_encode/LaPDFD.sv"
 
 module lapdfd_tb;
 
@@ -72,12 +72,12 @@ integer tap_file, vector_file, outfile, line;
 integer cycle_count = 0;
 
 initial begin
-    if ($test$plusargs("debug")) begin
+    // if ($test$plusargs("debug")) begin
         $dumpfile("lapdfd.vcd");
         $dumpvars(0, lapdfd_tb);
-        // $vcdplusfile("lapdfd.vpd");
-        // $vcdpluson(0, lapdfd_tb);
-    end
+    //     // $vcdplusfile("lapdfd.vpd");
+    //     // $vcdpluson(0, lapdfd_tb);
+    // end
 
     // Open and read tap vector file
     tap_file = $fopen("tap_vector.txt", "r");
@@ -131,7 +131,9 @@ initial begin
 
         if (rxValid) begin
             // Write raw decoded 3-bit symbols to file
-            $fwrite(outfile, "%0d %0d %0d %0d %0d %0d %0d %0d\n", sym0, sym1, sym2, sym3,$signed(dut.dfp_0.io_rxFilter),$signed(dut.dfp_1.io_rxFilter),$signed(dut.dfp_2.io_rxFilter),$signed(dut.dfp_3.io_rxFilter));
+            $fwrite(outfile, "%0d %0d %0d %0d", sym0, sym1, sym2, sym3,$signed(dut.dfp_0.io_rxFilter),$signed(dut.dfp_1.io_rxFilter),$signed(dut.dfp_2.io_rxFilter),$signed(dut.dfp_3.io_rxFilter));
+            // $fwrite(outfile, "%0d %0d %0d %0d\n", $signed(dut.dfp_0.io_rxFilter), $signed(dut.dfp_1.io_rxFilter), $signed(dut.dfp_2.io_rxFilter), $signed(dut.dfp_3.io_rxFilter));
+            $fwrite(outfile, " %0d %0d %0d %0d\n", $signed(dut.dfp_0.io_rxFilter), $signed(dut.dfp_1.io_rxFilter), $signed(dut.dfp_2.io_rxFilter), $signed(dut.dfp_3.io_rxFilter));
         end
     end
 

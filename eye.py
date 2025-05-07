@@ -17,20 +17,40 @@ equalized = np.loadtxt("ffe_output.txt", skiprows=4)[:, 1:]
 
 colors = [f"C{i}" for i in range(5)]
 col = 0
-# for i in range(1, len(channel)-1):
-#     plt.plot(channel[i-1:i+2, col], alpha=0.5, color=colors[symbols[i+1, col]+2])
-# plt.savefig("original_eye.png")
-# plt.show()
+for i in range(1, len(channel)-1):
+    plt.plot(channel[i-1:i+2, col], alpha=0.5, color=colors[symbols[i+1, col]+2])
+plt.savefig("original_eye.png")
+plt.show()
+plt.close()
 
-correlation = np.correlate(equalized[:, col], symbols[:, col], mode='full')
-delay = np.argmax(correlation)
-# plt.stem(correlation)
-# plt.savefig("correlation.png")
-# plt.show()
-lag = delay - 255
+### CHATGPT
+a = equalized[:, col]       
+b = symbols[:, col]
+
+# Determine which is larger
+if len(a) > len(b):
+    a, b = b, a  # ensure a is the smaller one
+
+# Compute full cross-correlation
+corr = np.correlate(b, a, mode='full')
+
+# Find the best alignment (maximum correlation)
+best_offset = np.argmax(corr)
+
+# Compute lag: index offset from the beginning of full correlation
+lag = best_offset - (len(a) - 1)
+
+# Slice the larger sequence to match alignment
+# start = max(lag, 0)
+# end = start + len(a)
+# aligned_b = b[start:end]
+a = a[-best_offset-1:]
+aligned_b = b[:len(a)]
+print(np.max(corr), np.dot(a, aligned_b))
+### CHATGPT
 
 col = 0
-for i in range(1, len(equalized)-1):
-    plt.plot(equalized[i-1:i+2, col], alpha=0.5, color=colors[symbols[i, col]+2])
+for i in range(1, len(a)-1):
+    plt.plot(a[i-1:i+2], alpha=0.5, color=colors[aligned_b[i]+2])
 plt.savefig("ffe_eye.png")
 plt.show()
