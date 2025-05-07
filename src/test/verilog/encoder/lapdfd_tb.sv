@@ -131,7 +131,7 @@ initial begin
 
         if (rxValid) begin
             // Write raw decoded 3-bit symbols to file
-            $fwrite(outfile, "%0d %0d %0d %0d\n", sym0, sym1, sym2, sym3);
+            $fwrite(outfile, "%0d %0d %0d %0d %0d %0d %0d %0d\n", sym0, sym1, sym2, sym3,$signed(dut.dfp_0.io_rxFilter),$signed(dut.dfp_1.io_rxFilter),$signed(dut.dfp_2.io_rxFilter),$signed(dut.dfp_3.io_rxFilter));
         end
     end
 

@@ -2,8 +2,11 @@ package encoder
 
 import chisel3._
 import chisel3.util._
+import _root_.circt.stage.ChiselStage
+import chisel3.util.ShiftRegister
+import chisel3.util.ShiftRegisters
 
-class Top_Encoder extends Module {
+class Top_Encoder(master: Boolean = true, init: UInt = 1.U, filter_on: Boolean = false) extends Module {
   val io = IO(new Bundle {
     // Encoder inputs
     val tx_enable = Input(Bool())
@@ -29,7 +32,7 @@ class Top_Encoder extends Module {
   })
 
   // Instantiate Encoder
-  val encoder = Module(new Encoder())
+  val encoder = Module(new Encoder(master, init,false)) 
 
   encoder.io.tx_enable := io.tx_enable
   encoder.io.tx_mode := io.tx_mode
@@ -59,4 +62,10 @@ class Top_Encoder extends Module {
   io.Bshaped := filter.io.Bshaped
   io.Cshaped := filter.io.Cshaped
   io.Dshaped := filter.io.Dshaped
+}
+object Top_Encoder extends App {
+  ChiselStage.emitSystemVerilogFile(
+    new Top_Encoder(true, 1.U(33.W), false),
+    firtoolOpts = Array("-disable-all-randomization", "-strip-debug-info")
+  )
 }
