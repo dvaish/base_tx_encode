@@ -23,6 +23,7 @@ test:
 	python channel_model.py
 	vcs -full64 src/test/verilog/encoder/FFE_tb.sv -sverilog +incdir+. -R
 	vcs -full64 src/test/verilog/encoder/lapdfd_tb.sv -sverilog +incdir+. -R
+	vcs -full64 src/test/verilog/encoder/descrambler_tb.sv -sverilog +incdir+. -R
 
 clean:
 	@rm -r *.trn *.dsn *.key simv *.daidir obj_dir csrc .simvision simvision*
